@@ -1,0 +1,26 @@
+<script setup>
+import { ref } from "vue";
+
+let title = ref('');
+let content = ref('');
+let category = ref('');
+
+function post(){
+  window.open(`/post/${title.value}/${content.value}/${category.value}`);
+}
+</script>
+
+<template>
+  <el-container style="width: 100%;height: 100%;display: flex;flex-direction: column;flex-basis: 0;">
+    <el-form style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
+        <el-input style="width: 20%;margin-top:50px;" placeholder="填写标题" maxlength="30" show-word-limit v-model="title"></el-input>
+      <el-input type="textarea" style="width:80%;margin-top:20px;font-size: 20px" :rows="10" v-model="content"></el-input>
+      <el-input placeholder="输入分区" style="width: 100px;height: 30px;position: relative;margin-top: 20px" v-model="category"></el-input>
+      <el-button style="width: 100px;height: 30px;position: relative;margin-top: 20px" type="primary" :click="post">提交</el-button>
+    </el-form>
+  </el-container>
+</template>
+
+<style scoped>
+
+</style>

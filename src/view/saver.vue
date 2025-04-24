@@ -64,6 +64,7 @@ init()
         class="search"
         :prefix-icon="Search"
     />
+    <el-button type="primary" style="position: relative;bottom: 250%;left: 70%" @click="function(){router.push('/post')}">投稿</el-button>
     <router-link to=''>
       <el-avatar class="avatar" src="/avatar.webp">
       </el-avatar>
@@ -84,21 +85,23 @@ init()
 }
 
 .icon {
-  position: fixed;
+  position: relative;
   left: 1%;
   top: 5px;
 }
 
 .name {
-  position: fixed;
+  position: relative;
+  width: 100px;
   left: 5%;
-  top: 15px;
+  bottom: 50%;
   font-size: 20px;
 }
 
 .nav{
   width: auto;
-  position: fixed;
+  position: relative;
+  bottom: 120%;
   left: 25%;
 }
 
@@ -124,15 +127,15 @@ init()
 }
 
 .search {
-  position: fixed;
-  top: 10px;
+  position: relative;
+  bottom: 250%;
   left: 55%;
 }
 
 .avatar {
-  position: fixed;
-  right: 1%;
-  top: 10px;
+  position: relative;
+  left: 75%;
+  bottom: 230%;
 }
 
 /*页面切换*/

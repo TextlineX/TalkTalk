@@ -50,6 +50,11 @@ const routes = [
     path: '/toolbox',
     name: 'toolbox',
     component: () => import('/src/components/content/toolbox.vue')
+  },
+  {
+    path: '/post',
+    name: 'post',
+    component: () => import('/src/components/content/post.vue')
   }
 ]
 
