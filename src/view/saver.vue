@@ -1,13 +1,6 @@
 <script setup>
 import { Search } from '@element-plus/icons-vue';
 import { ref } from 'vue';
-import news from '/src/components/content/news.vue';
-import home from '/src/components/content/home.vue';
-import classify from "/src/components/content/classify.vue";
-import toolbox from "/src/components/content/toolbox.vue";
-import my from "/src/components/content/my.vue";
-import settings from "/src/components/content/settings.vue";
-import about from "/src/components/content/about.vue";
 import { useRouter } from 'vue-router';
 let router = useRouter();
 
@@ -47,8 +40,11 @@ init()
 
 <template>
   <el-header class="header">
+    <div class="icon-content">
     <el-image class="icon" src="/talktalk.png" fit="cover" style="width: 45px;height: 45px"></el-image>
-    <p class="name">TalkTalk</p>
+    <el-link class="name">TalkTalk</el-link>
+    </div>
+    <div class="nav-content">
     <el-tabs class="nav" @tab-click="handleClick">
       <el-tab-pane label="首页" class="navs" ></el-tab-pane>
       <el-tab-pane label="分类" class="navs"></el-tab-pane>
@@ -57,18 +53,22 @@ init()
       <el-tab-pane label="设置" class="navs"></el-tab-pane>
       <el-tab-pane label="关于" class="navs"></el-tab-pane>
     </el-tabs>
+    </div>
+    <div class="search-content">
     <el-input
         v-model="searchValue"
-        style="width: 280px;height: 40px"
         placeholder="输入搜索"
         class="search"
         :prefix-icon="Search"
     />
-    <el-button type="primary" style="position: relative;bottom: 250%;left: 70%" @click="function(){router.push('/post')}">投稿</el-button>
+    </div>
+    <div class="user-content">
+    <el-button class="post-button" type="primary" @click="function(){router.push('/post')}">投稿</el-button>
     <router-link to=''>
       <el-avatar class="avatar" src="/avatar.webp">
       </el-avatar>
     </router-link>
+    </div>
   </el-header>
   <el-container class="content">
     <router-view></router-view>
@@ -79,30 +79,42 @@ init()
 .header{
   height: 60px;
   width: 100%;
+  top: 0;
+  left: 0;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   position: fixed;
+  display: inline-flex;
 }
 
-.icon {
+.icon-content {
   position: relative;
+  width: 20%;
   left: 1%;
   top: 5px;
 }
 
+.icon {
+  width: auto;
+  height: auto;
+ }
+
 .name {
+  font-size: 100%;
+  height: 100%;
   position: relative;
-  width: 100px;
   left: 5%;
-  bottom: 50%;
-  font-size: 20px;
+  bottom: 25%;
+}
+
+.nav-content {
+  position: relative;
+  width: 30%;
+  left: 10%;
 }
 
 .nav{
-  width: auto;
-  position: relative;
-  bottom: 120%;
-  left: 25%;
+  width: 100%;
 }
 
 .el-tabs {
@@ -126,16 +138,34 @@ init()
   background-color: #ffffff;
 }
 
+.search-content {
+  position: relative;
+  width: 20%;
+  left: 10%;
+}
+
 .search {
   position: relative;
-  bottom: 250%;
-  left: 55%;
+  top: 20%;
+  width: 100%;
+  height: 40px;
+}
+
+.user-content {
+  position: relative;
+  width: 30%;
+  left: 15%;
+}
+
+.post-button {
+  position: relative;
+  top: 0;
 }
 
 .avatar {
   position: relative;
-  left: 75%;
-  bottom: 230%;
+  left: 15%;
+  top: 20%;
 }
 
 /*页面切换*/
