@@ -15,7 +15,9 @@ function post(){
     method: 'post',
     mode: 'cors',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
     },
     body: JSON.stringify({"title":`${title.value}`,"content":`${content.value}`,"category":`${category.value}`,"author":`${localStorage.getItem('user')}`,"time":`${time}`})
   }).then((res)=>{
