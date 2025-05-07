@@ -3,11 +3,19 @@
 </script>
 
 <template>
-  <el-container>
-    <h1 style="margin: auto">缺少后端，正在搭建。</h1>
+  <el-container class="content">
+    <h1>开始制作</h1>
+    <h2>敬请期待。</h2>
   </el-container>
 </template>
 
 <style scoped>
-
+.content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>

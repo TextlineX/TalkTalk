@@ -177,4 +177,25 @@ init()
   overflow: hidden;
   z-index: 0;
 }
+
+/*移动端适配*/
+@media screen and (max-width: 768px) {
+  .icon-content {
+    width: 20%;
+    left: 1%;
+  }
+
+  .nav-content {
+    display: none;
+  }
+
+  .search-content {
+    width: 40%;
+    left: 10%;
+  }
+
+  .user-content {
+    display: none;
+  }
+}
 </style>

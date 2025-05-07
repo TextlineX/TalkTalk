@@ -1,29 +1,41 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 let title = ref('');
 let content = ref('');
 let category = ref('');
+let router = useRouter();
 
 let backend_url =import.meta.env.VITE_BACKEND_URL;
+
+if(localStorage.getItem('user') == null){
+  alert('请先登录');
+  router.push('/login');
+}
 
 function post(){
   let date = new Date();
   let time = date.toLocaleString();
-
-  fetch(`${backend_url}db`, {
-    method: 'post',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
-    },
-    body: JSON.stringify({"title":`${title.value}`,"content":`${content.value}`,"category":`${category.value}`,"author":`${localStorage.getItem('user')}`,"time":`${time}`})
-  }).then((res)=>{
-    console.log('开始输出。')
-    console.log(res);
-  });
+  if(title.value == '' || content.value == '' || category.value == ''){
+    alert('请填写完整');
+  }else {
+    fetch(`${backend_url}db`, {
+      method: 'post',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
+      },
+      body: JSON.stringify({"title":`${title.value}`,"content":`${content.value}`,"category":`${category.value}`,"author":`${localStorage.getItem('user')}`,"time":`${time}`})
+    }).then((res,r)=>{
+      console.log('开始输出。')
+      console.log(res,r);
+    });
+    alert('提交成功');
+    router.push('/news');
+  }
 }
 </script>
 
