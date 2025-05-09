@@ -2,8 +2,9 @@
 import { Search } from '@element-plus/icons-vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-let router = useRouter();
 
+import Move from '/src/components/content/Move.vue'
+let router = useRouter();
 let searchValue = ref('')
 
 /*路由切换*/
@@ -38,7 +39,7 @@ function handleClick(tab,event) {
 function mobile(e){
   let dd = e.currentTarget.id;
   document.querySelector(`#${dd}`).classList.add('class','vm_click');
-  for(let i = 0; i < 6; i++){
+  for(let i = 0; i < 5; i++){
     if(`t${i}` != dd){
       document.querySelector(`#t${i}`).classList.remove('vm_click');
     }
@@ -63,13 +64,16 @@ function mobile(e){
 }
 
 init()
+window.onload = function () {
+  document.querySelector('#t0').classList.add('vm_click');
+}
 </script>
 
 <template>
   <el-header class="header">
     <div class="icon-content">
     <el-image class="icon" src="/talktalk.png" fit="cover" style="width: 45px;height: 45px"></el-image>
-    <el-link class="name">TalkTalk</el-link>
+    <el-link class="name" href="/">TalkTalk</el-link>
     </div>
     <div class="nav-content">
     <el-tabs class="nav" @tab-click="handleClick">
@@ -124,6 +128,7 @@ init()
       我的
     </div>
   </div>
+  <Move />
 </template>
 
 <style lang="less" scoped>
@@ -210,7 +215,7 @@ init()
 
 .post-button {
   position: relative;
-  top: 0;
+  bottom: 8%;
 }
 
 .avatar {
@@ -224,8 +229,8 @@ init()
   position: fixed;
   top: 60px;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: calc(100% - 60px);
+  overflow: auto;
   z-index: 0;
 }
 
