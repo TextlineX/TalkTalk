@@ -1,12 +1,18 @@
 <script setup>
 import { useRouter } from 'vue-router'; // 导入 useRouter
 import { ref,onMounted } from 'vue'
+let backend_url =import.meta.env.VITE_BACKEND_URL;
 
 let router = useRouter(); // 获取路由实例
 let ensure = ref('');
+
+let username = ref('');
+let password = ref('');
+
 let reu = 'fail';
 let qr =''
 let iD = ''
+
 function post(){
   if(reu==='fail'){
     document.querySelector('.layer').style.display = 'grid';
@@ -27,6 +33,59 @@ function post(){
   }
 }
 
+function vef(){
+  async function get_2(){
+    const vf = await fetch(`https://v2.xxapi.cn/api/captcha?id=${iD}&key=${ensure.value}`,{
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      mode: 'cors'
+    });
+    let data = await vf.json();
+    console.log(data);
+    if(data.data==='验证成功'){
+      await register_v();
+      await router.push('/login');
+    }else{
+      alert('验证失败');
+    }
+  }
+  get_2();
+}
+
+async function register_v(){
+  await fetch(`${backend_url}register`,{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
+    },
+    mode: 'cors',
+    body: JSON.stringify({
+      'name': username.value,
+      'password': password.value,
+      'date': new Date().toISOString(),
+      'sex': '默认',
+      'description': ' ',
+      'avatar': 'https://img.textline.top/file/1747010554838_avatar.webp',
+      'banner': 'https://img.textline.top/file/1740911096111_rg2.jpg',
+      'phone': '',
+      'email': ''
+    })
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error('注册失败');
+    }
+    return response.json();
+  }).catch(error => {
+    console.error('注册错误:', error);
+    alert('注册失败，请重试');
+  });
+}
+
 onMounted(() => {
   // 在组件挂载后隐藏layer
   document.querySelector('.layer').style.display = 'none';
@@ -36,10 +95,10 @@ onMounted(() => {
 <template>
   <el-form class="form">
     <el-form-item>
-      <el-input class="i" placeholder="请输入用户名"></el-input>
+      <el-input class="i" placeholder="请输入用户名" v-model="username"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-input class="i" placeholder="请输入密码"></el-input>
+      <el-input class="i" placeholder="请输入密码" v-model="password" type="password"></el-input>
     </el-form-item>
     <el-form-item>
       <el-button class="i" type="primary" @click="post">注册</el-button>
@@ -52,8 +111,8 @@ onMounted(() => {
     <div class="inner">
       <p>请输入验证码</p>
       <img alt='验证码加载失败' :src="qr">
-      <el-input v-model:="ensure" class="ensure_input" :maxlength="4"></el-input>
-      <el-button class="ensure_btn" :type="'primary'">提交</el-button>
+      <el-input v-model="ensure" class="ensure_input" :maxlength="4"></el-input>
+      <el-button class="ensure_btn" :type="'primary'" @click="vef">提交</el-button>
     </div>
   </div>
 </template>

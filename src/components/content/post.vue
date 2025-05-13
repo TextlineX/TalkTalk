@@ -47,9 +47,13 @@ function post(){
       <el-input placeholder="输入分区" style="width: 100px;height: 30px;position: relative;margin-top: 20px" v-model="category"></el-input>
       <el-button style="width: 100px;height: 30px;position: relative;margin-top: 20px" type="primary" @click="post()">提交</el-button>
     </el-form>
+    <div class="blank"></div>
   </el-container>
 </template>
 
 <style scoped>
-
+.blank {
+  width: 100%;
+  height: 200px;
+}
 </style>
