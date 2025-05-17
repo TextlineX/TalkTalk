@@ -5,13 +5,46 @@ const router = useRouter(); // 获取路由实例
 const user = ref('')
 const password = ref('')
 const msg = '未登录'
-
+const backend_url =import.meta.env.VITE_BACKEND_URL;
 let temp = ()=>{
   localStorage.setItem('user', 'temp');
-  localStorage.setItem('password', 'temp');
-  localStorage.setItem('token', 'temp');
+  localStorage.setItem('avatar','');
+  localStorage.setItem('token', 'null');
   router.push('/news');
 };
+
+function login() {
+  console.log('登录中。。。')
+  async function login() {
+    await fetch(`${backend_url}login`, {
+      mode:'cors',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
+      },
+      body: JSON.stringify({
+        username: user.value,
+        password: password.value
+      })
+    }).then(res =>{
+      async function get_Response(){
+        let vf = await res.json();
+        console.log(vf);
+        if(vf.message==='登录成功'){
+          localStorage.setItem('user', user.value);
+          localStorage.setItem('avatar',vf.avatar);
+          router.push('/news');
+        }else{
+          alert('用户名或密码错误');
+        }
+      }
+      get_Response();
+    })
+  }
+   login();
+}
 </script>
 
 <template>
@@ -21,14 +54,13 @@ let temp = ()=>{
       <el-input v-model="user" placeholder="请输入内容"></el-input>
       <h1>密码</h1>
       <el-input v-model="password" placeholder="请输入内容"></el-input>
-      <el-button type="primary">登录</el-button>
+      <el-button type="primary" @click="login">登录</el-button>
       <router-link to="/register" style="color: #909399;text-decoration: none;transform: translateX(150px) translateY(8px)">注册</router-link>
     </el-form>
   </el-container>
   <el-aside>
     <el-alert type="error">{{msg}}</el-alert>
   </el-aside>
-  <el-button type="primary" circle style="width: 100px;height: 100px;position: absolute;bottom: 200px;right: 200px" @click="temp">临时登录</el-button>
 </template>
 
 <style scoped>

@@ -50,12 +50,23 @@ function vef(){
       await router.push('/login');
     }else{
       alert('验证失败');
+      post()
     }
   }
   get_2();
 }
 
 async function register_v(){
+  if (username.value === '' || password.value === '') {
+    alert('用户名或密码不能为空');
+    return;
+  }else if(username.value.length<3){
+    alert('用户名长度不能小于3');
+    return;
+  }else if(password.value.length<6){
+    alert('密码长度不能小于6');
+  }
+
   await fetch(`${backend_url}register`,{
     method: 'POST',
     headers: {
@@ -75,15 +86,15 @@ async function register_v(){
       'phone': '',
       'email': ''
     })
-  }).then(response => {
-    if (!response.ok) {
-      throw new Error('注册失败');
+  }).then((rs) => {
+    async function rs_db(){
+      let vf = await rs.json();
+      if (vf.status==409){
+        alert('用户名已存在');
+      }
     }
-    return response.json();
-  }).catch(error => {
-    console.error('注册错误:', error);
-    alert('注册失败，请重试');
-  });
+    rs_db();
+  })
 }
 
 onMounted(() => {
