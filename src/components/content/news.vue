@@ -69,7 +69,7 @@ init()
   left: 0;
 
   .box {
-    width: 500px;
+    width: 90%;
     height: 200px;
     background-color: rgba(222, 222, 222, 0.93);
     border-radius: 10px;
@@ -92,6 +92,7 @@ init()
       margin: 10px;
       width: 99%;
       font-size: 15px;
+      font-weight: lighter;
       position: relative;
       left: 20px;
       white-space: nowrap;
@@ -122,8 +123,8 @@ init()
       }
   }
     .box:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 10px
+      transition: 100ms;
+      box-shadow: 0 0 2px
     }
 }
 

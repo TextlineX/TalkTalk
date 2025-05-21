@@ -6,12 +6,6 @@ const user = ref('')
 const password = ref('')
 const msg = '未登录'
 const backend_url =import.meta.env.VITE_BACKEND_URL;
-let temp = ()=>{
-  localStorage.setItem('user', 'temp');
-  localStorage.setItem('avatar','');
-  localStorage.setItem('token', 'null');
-  router.push('/news');
-};
 
 function login() {
   console.log('登录中。。。')

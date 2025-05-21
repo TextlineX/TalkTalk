@@ -9,15 +9,18 @@ let router = useRouter();
 
 let backend_url =import.meta.env.VITE_BACKEND_URL;
 
-if(localStorage.getItem('user') == null){
+if(localStorage.getItem('user') === null){
   alert('请先登录');
   router.push('/login');
+}else if(localStorage.getItem('user') === 'TEMP'){
+  localStorage.removeItem('user');
+  localStorage.removeItem('password')
 }
 
 function post(){
   let date = new Date();
   let time = date.toLocaleString();
-  if(title.value == '' || content.value == '' || category.value == ''){
+  if(title.value === '' || content.value === '' || category.value === ''){
     alert('请填写完整');
   }else {
     fetch(`${backend_url}db`, {

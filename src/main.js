@@ -18,11 +18,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 /*初始化*/
 let init = () => {
     console.log('初始化中');
-    if(localStorage.getItem('token') == null) {
-        router.push('/login').then(r =>{
-            console.log('跳转成功')
-        } );
-    }
     if(localStorage.getItem('router') == null) {
         localStorage.setItem('router', '1');
     }
