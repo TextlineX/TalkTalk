@@ -59,6 +59,8 @@ getLabel()
   align-items: center;
   background-color: #f5f5f5;
   overflow: hidden;
+  flex-wrap: wrap;
+  flex-basis: 0;
 
   .label {
     width: auto;
