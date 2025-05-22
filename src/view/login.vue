@@ -25,10 +25,15 @@ function login() {
     }).then(res =>{
       async function get_Response(){
         let vf = await res.json();
-        console.log(vf);
+        let vff = vf.data
+        console.log(vff)
         if(vf.message==='登录成功'){
           localStorage.setItem('user', user.value);
-          localStorage.setItem('avatar',vf.avatar);
+          localStorage.setItem('avatar',vff.avatar);
+          localStorage.setItem('banner',vff.banner);
+          localStorage.setItem('desc',vff.description);
+          localStorage.setItem('time',vff.DATE);
+          localStorage.setItem('id',vff.id);
           router.push('/news');
         }else{
           alert('用户名或密码错误');
@@ -38,6 +43,10 @@ function login() {
     })
   }
    login();
+}
+
+if(localStorage.getItem('user')!=null){
+router.push('/news');
 }
 </script>
 

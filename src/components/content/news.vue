@@ -29,6 +29,10 @@ function loadA(data){
     `
     wrapper.appendChild(box)
   }
+  let wrapper = document.querySelector('.wrapper')
+  let bb = document.createElement('div');
+  bb.className = 'news_wrapper';
+  wrapper.appendChild(bb)
 }
 
 init()
@@ -37,7 +41,8 @@ init()
 <template>
   <el-container class="content">
     <el-container class="wrapper">
-      <div class="wrapper_01"></div>
+      <div class="wrapper_01">
+      </div>
     </el-container>
   </el-container>
 </template>
@@ -128,6 +133,8 @@ init()
     }
 }
 
-/*首页文章展示*/
-
+.news_wrapper {
+  width: 100%;
+  height: 100px;
+}
 </style>

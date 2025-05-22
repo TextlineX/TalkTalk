@@ -27,6 +27,10 @@ function generate(rs){
     lb.innerHTML = rs.data[i].label
     content.appendChild(lb)
   }
+
+  let bk = document.createElement('div')
+  bk.className= 'blank'
+  content.appendChild(bk)
 }
 
 getLabel()
@@ -52,7 +56,6 @@ getLabel()
 
 .content2 {
   width: 100%;
-  height: 100vh;
   padding: 5%;
   display: inline-flex;
   justify-content: center;
@@ -60,7 +63,6 @@ getLabel()
   background-color: #f5f5f5;
   overflow: hidden;
   flex-wrap: wrap;
-  flex-basis: 0;
 
   .label {
     width: auto;
@@ -119,6 +121,11 @@ getLabel()
 
   .label:nth-child(9n){
     background-color: #409eff;
+  }
+
+  .blank {
+    width: 100%;
+    height: 200px;
   }
 }
 </style>

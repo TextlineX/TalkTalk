@@ -141,7 +141,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   position: relative;
-  left: 20%;
+  left: 0;
 
   .i{
     width: 100%;
