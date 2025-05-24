@@ -51,7 +51,7 @@ router.push('/news');
 </script>
 
 <template>
-  <el-container style="width: 100%;height: 100%">
+  <el-container style="width: 100%;height: 100%;background-image: url(/background/login.png);background-size: cover;">
     <el-form class="form">
       <h1>登录</h1>
       <el-input v-model="user" placeholder="请输入内容"></el-input>

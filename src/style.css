@@ -1,1 +1,6 @@
 @import url("https://fontsapi.zeoseven.com/187/main/result.css");
+
+@font-face {
+  font-family: "iconfont";
+  src: url("/src/icons.woff2");
+}

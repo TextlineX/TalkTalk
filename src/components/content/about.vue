@@ -16,7 +16,7 @@
         <el-image src="/icons/github.png" style="width: 30px;height: 30px;margin-right: 10px"></el-image>
       </el-link>
     </el-main>
-    <el-footer style="text-align: center">
+    <el-footer class="footer" style="text-align: center">
       <p style="margin-bottom: 5px">Copyright © 2025 TalkTalk</p>
       <p style="">Created by Textline</p>
     </el-footer>
@@ -25,5 +25,15 @@
 <style scoped>
 .info p {
   margin-top: 20px;
+}
+
+@media screen and (max-width: 750px) {
+  .info p {
+    font-size: 15px;
+  }
+
+  .footer {
+    margin-bottom: 20%;
+  }
 }
 </style>

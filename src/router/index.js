@@ -55,6 +55,16 @@ const routes = [
     path: '/post',
     name: 'post',
     component: () => import('/src/components/content/post.vue')
+  },
+  {
+    path: '/content',
+    name: 'content',
+    component: () => import('/src/components/content/content.vue')
+  },
+  {
+    path: '/tag',
+    name: 'tag',
+    component: () => import('/src/components/content/tag.vue')
   }
 ]
 

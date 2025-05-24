@@ -24,7 +24,7 @@ function generate(rs){
   for(let i = 0; i < num; i++){
     let lb = document.createElement('div')
     lb.className = 'label'
-    lb.innerHTML = rs.data[i].label
+    lb.innerHTML = `<p>${rs.data[i].label}</p>`
     content.appendChild(lb)
   }
 
@@ -52,6 +52,8 @@ getLabel()
   justify-content: center;
   align-items: center;
   background-color: #f5f5f5;
+  background-image: url("/background/classify.jpg");
+  background-size: cover;
 }
 
 .content2 {
@@ -60,67 +62,113 @@ getLabel()
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5f5f5;
+  background-color: transparent;
   overflow: hidden;
   flex-wrap: wrap;
 
   .label {
     width: auto;
-    height: 2rem;
-    transform: scale(120%);
-    background-color: #9a27de;
+    height: 3rem;
+    padding: 20px;
+    background-color: rgba(231, 231, 231, 0.62);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
     color: #fff;
+    font-weight: bold;
     font-size: 1.5rem;
     line-height: 2rem;
     text-align: center;
-    border-radius: 8px;
     transition: 400ms;
     transition-delay: 100ms;
     transition-duration: 500ms;
     margin: 1.5rem;
   }
 
+  .label p{
+    width: 135%;
+    transform: translateY(-15px) translateX(-5%);
+    background-color: rgb(255 255 255 / 30%);;
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: 400ms;
+    transition-delay: 100ms;
+    transition-duration: 500ms;
+  }
+
   .label:hover {
-    background-color: #7b1fa2;
     cursor: pointer;
     transform: scale(140%);
   }
 
-  .label:nth-child(n){
-    background-color: #67c23a;
+  .label p:hover {
+    transform: scale(120%);
+    backdrop-filter: blur(0);
+  }
+
+  .label:nth-child(n) {
+    background-color: rgba(170, 0, 255, 0.5);
+  }
+  .label:nth-child(2n) {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  .label:nth-child(3n) {
+    background-color: rgba(230, 162, 60, 0.5);
+  }
+  .label:nth-child(4n) {
+    background-color: rgba(64, 158, 255, 0.5);
+  }
+  .label:nth-child(5n) {
+    background-color: rgba(154, 39, 222, 0.5);
+  }
+  .label:nth-child(6n) {
+    background-color: rgba(103, 194, 58, 0.5);
+  }
+  .label:nth-child(7n) {
+    background-color: rgba(245, 108, 108, 0.5);
+  }
+  .label:nth-child(8n) {
+    background-color: rgba(230, 162, 60, 0.5);
+  }
+  .label:nth-child(9n) {
+    background-color: rgba(64, 158, 255, 0.5);
+  }
+
+  .label:nth-child(n) p{
+    background-color: rgba(153 50 204 /50%);
   }
 
 
-  .label:nth-child(2n){
-    background-color: #f56c6c;
+  .label:nth-child(2n) p{
+    background-color: rgba(255 0 0 /50%);
   }
 
-  .label:nth-child(3n){
-    background-color: #e6a23c;
+  .label:nth-child(3n) p{
+    background-color: rgba(230 162 60 /50%);
   }
 
-  .label:nth-child(4n){
-    background-color: #409eff;
+  .label:nth-child(4n) p{
+    background-color: rgba(64,158,255,0.5);
   }
 
-  .label:nth-child(5n){
-    background-color: #9a27de;
+  .label:nth-child(5n) p{
+    background-color: rgba(154,39,222,0.5 );
   }
 
-  .label:nth-child(6n){
-    background-color: #67c23a;
+  .label:nth-child(6n) p{
+    background-color: rgba(103,194,58,0.5);
   }
 
-  .label:nth-child(7n){
-    background-color: #f56c6c;
+  .label:nth-child(7n) p{
+    background-color: rgba(245,108,108,0.5);
   }
 
-  .label:nth-child(8n){
-    background-color: #e6a23c;
+  .label:nth-child(8n) p{
+    background-color: rgba(230,162,60,0.5);
   }
 
-  .label:nth-child(9n){
-    background-color: #409eff;
+  .label:nth-child(9n) p{
+    background-color: rgba(64,158,255,0.5);
   }
 
   .blank {

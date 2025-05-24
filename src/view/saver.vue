@@ -64,7 +64,7 @@ function mobile(e){
 }
 
 init()
-window.onload = function () {
+window.onload = function (){
   document.querySelector('#t0').classList.add('vm_click');
   let avatar = localStorage.getItem('avatar')
   let atr = document.querySelector('.avatar img')

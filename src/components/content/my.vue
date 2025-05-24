@@ -4,13 +4,22 @@ let banner = localStorage.getItem('banner')
 let avatar = localStorage.getItem('avatar')
 let desc = localStorage.getItem('desc')
 
+import { useRouter } from "vue-router";
+let router = useRouter();
+
 function init(){
   let get_bd = document.querySelector('.up_content');
   get_bd.style.backgroundColor='#262ae0';
   get_bd.style.backgroundImage = `url(${banner})`;
-  console.log('开始加载背景')
 }
 
+function check(){
+  if(name == null){
+    router.push('/login')
+  }
+}
+
+check()
 </script>
 
 <template>
@@ -29,6 +38,7 @@ function init(){
         </div>
       </div>
     </div>
+    <div class="down_content"></div>
   </el-container>
 </template>
 
@@ -36,6 +46,8 @@ function init(){
 .outer_content {
   width: 100%;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .up_content {
@@ -84,8 +96,22 @@ function init(){
         line-height: 1.2rem;
         position: relative;
         color: white;
+        left: 5%;
       }
     }
+  }
+}
+
+.down_content {
+  width: 100%;
+  height: 70%;
+  background-color: #f0f0f0;
+}
+
+@media screen and (max-width: 750px) {
+  .avatar_box span {
+    width: 4rem !important;
+    height: 4rem !important;
   }
 }
 </style>
