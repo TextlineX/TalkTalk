@@ -1,13 +1,18 @@
 <script setup>
 import { useRouter } from 'vue-router';
 let router = useRouter()
-
+import { ref } from 'vue';
+let current = ref(1)
+let total = ref(20)
 
 let backend_url =import.meta.env.VITE_BACKEND_URL;
 async function init(){
   fetch(`${backend_url}getArticle`,{
-    method: 'get',
-    mode: 'cors'
+    method: 'post',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },body: JSON.stringify({current: current.value, pageSize: total.value})
   }).then(res=> {
     async function get_Response(){
       let vf = await res.json();
@@ -35,10 +40,9 @@ function loadA(data){
         <ol class="like">点赞</ol>
         <ol class="collect">收藏</ol>
         <ol class="share">分享</ol>
-
 </div>
     `
-    wrapper.appendChild(box)
+    wrapper.insertBefore(box,wrapper.children[0])
   }
   let wrapper = document.querySelector('.wrapper')
   let bb = document.createElement('div');
@@ -57,6 +61,28 @@ function loadA(data){
   }
 }
 
+function pagesChange(){
+  deleteAll()
+  init()
+}
+
+function up(){
+  let wrapper = document.querySelector('.wrapper')
+  wrapper.scrollIntoView({behavior: 'smooth'})
+  router.push('#01')
+}
+
+function deleteAll(){
+  let wrapper = document.querySelector('.wrapper')
+  let news_wrapper = document.querySelector('.news_wrapper')
+  wrapper.removeChild(news_wrapper)
+  let all_box = document.querySelectorAll('.box')
+  for(let i = 0;i<all_box.length;i++){
+    wrapper.removeChild(all_box[i])
+  }
+}
+
+
 function articleClick(link){
   router.push(`/content?${link}`)
 }
@@ -69,18 +95,24 @@ init()
 </script>
 
 <template>
-  <el-container class="content">
-    <el-container class="wrapper">
-      <div class="wrapper_01">
+  <a-layout-content class="content">
+    <a-layout-content class="wrapper">
+      <div class="wrapper_01" id="01">
       </div>
-    </el-container>
-  </el-container>
+      <a-pagination v-model:current="current" :total="total" class="pages" @change="pagesChange()"  />
+      <a-float-button class="float_button" icon="up" @click="up()">
+        <template #icon>
+          <ArrowUpOutlined />
+        </template>
+      </a-float-button>
+    </a-layout-content>
+  </a-layout-content>
 </template>
 
 <style lang="less">
 .content {
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -146,7 +178,7 @@ init()
         font-size: 15px;
         padding: 1%;
         text-align: center;
-        border-radius: 25px;
+        border-radius: 15px;
         line-height: 15px;
         font-weight: bold;
         color: rgba(36, 97, 255, 0.86);
@@ -189,6 +221,7 @@ init()
       align-items: center;
 
       ol {
+        margin-top: 10px;
         color:#6c757d;
         transition: 200ms ease-in-out;
         cursor: pointer;
@@ -221,5 +254,10 @@ init()
 .news_wrapper {
   width: 100%;
   height: 100px;
+}
+
+.pages {
+  position: relative;
+  bottom: 0;
 }
 </style>

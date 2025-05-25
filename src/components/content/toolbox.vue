@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <el-container>
-    <el-header style="text-align: center;margin-top: 50px;font-size: 35px;padding: 20px;">百宝箱</el-header>
-  </el-container>
+  <a-layout-content>
+    <a-empty description="数据为空" />
+  </a-layout-content>
 </template>
 
 <style scoped>

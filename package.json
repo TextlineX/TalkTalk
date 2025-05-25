@@ -9,16 +9,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@element-plus/icons-vue": "^2.3.1",
     "@waline/client": "^3.5.7",
+    "ant-design": "^1.0.0",
+    "ant-design-vue": "^4.2.6",
     "element-plus": "^2.9.8",
     "less": "^4.3.0",
+    "unplugin-vue-components": "^28.5.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "waline": "^0.0.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.2",
+    "@vitejs/plugin-vue": "^5.2.4",
     "vite": "^6.3.1"
   }
 }

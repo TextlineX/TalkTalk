@@ -1,5 +1,5 @@
 <script setup>
-import { Search } from '@element-plus/icons-vue';
+import {Avatar, Search} from '@element-plus/icons-vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -14,23 +14,26 @@ function init() {
 
 function handleClick(tab,event) {
   console.log('切换路由到:', event.target.id);
-  switch (event.target.id) {
-    case 'tab-0':
+  let rs = event.target.id;
+  let rss = rs.split('-');
+  let r = rss[4];
+  switch (r) {
+    case '0':
       router.push('/news');
       break;
-    case 'tab-1':
+    case '1':
       router.push('/classify');
       break;
-    case 'tab-2':
+    case '2':
       router.push('/toolbox');
       break;
-    case 'tab-3':
+    case '3':
       router.push('/my');
       break;
-    case 'tab-4':
+    case '4':
       router.push('/settings');
       break;
-    case 'tab-5':
+    case '5':
       router.push('/about');
       break;
   }
@@ -63,6 +66,31 @@ function mobile(e){
   }
 }
 
+const open = ref(false);
+const afterOpenChange = bool => {
+  console.log('open', bool);
+};
+const showDrawer = () => {
+  open.value = true;
+};
+
+import { message } from 'ant-design-vue';
+const [messageApi, contextHolder] = message.useMessage();
+const info = () => {
+  messageApi.info('退出登录成功');
+};
+
+function logout(){
+  localStorage.removeItem('banner');
+  localStorage.removeItem('avatar');
+  localStorage.removeItem('desc');
+  localStorage.removeItem('id');
+  localStorage.removeItem('user');
+  localStorage.removeItem('time');
+  open.value = false;
+  info();
+}
+
 init()
 window.onload = function (){
   document.querySelector('#t0').classList.add('vm_click');
@@ -79,17 +107,17 @@ window.onload = function (){
     <el-link class="name" href="/">TalkTalk</el-link>
     </div>
     <div class="nav-content">
-    <el-tabs class="nav" @tab-click="handleClick">
-      <el-tab-pane label="首页" class="navs" ></el-tab-pane>
-      <el-tab-pane label="分类" class="navs"></el-tab-pane>
-      <el-tab-pane label="工具箱" class="navs"></el-tab-pane>
-      <el-tab-pane label="我的" class="navs"></el-tab-pane>
-      <el-tab-pane label="设置" class="navs"></el-tab-pane>
-      <el-tab-pane label="关于" class="navs"></el-tab-pane>
-    </el-tabs>
+    <a-tabs class="nav" @tabClick="handleClick">
+      <a-tab-pane tab="首页" key="0" class="navs" ></a-tab-pane>
+      <a-tab-pane tab="分类" key="1" class="navs"></a-tab-pane>
+      <a-tab-pane tab="工具箱" key="2" class="navs"></a-tab-pane>
+      <a-tab-pane tab="我的" key="3" class="navs"></a-tab-pane>
+      <a-tab-pane tab="设置" key="4" class="navs"></a-tab-pane>
+      <a-tab-pane tab="关于" key="5" class="navs"></a-tab-pane>
+    </a-tabs>
     </div>
     <div class="search-content">
-    <el-input
+    <a-input
         v-model="searchValue"
         placeholder="输入搜索"
         class="search"
@@ -97,14 +125,27 @@ window.onload = function (){
     />
     </div>
     <div class="user-content">
-    <el-button class="post-button" type="primary" @click="function(){router.push('/post')}">投稿</el-button>
-    <router-link to=''>
-      <el-avatar class="avatar" src="/avatar.webp">
-      </el-avatar>
-    </router-link>
+    <a-button class="post-button" type="primary" @click="function(){router.push('/post')}">投稿</a-button>
+    <div class="avatar" @click="showDrawer">
+      <a-avatar class="avatar" src="/avatar.webp">
+      </a-avatar>
+    </div>
     </div>
   </el-header>
   <el-container class="content">
+    <a-drawer
+        v-model:open="open"
+        class="custom-class"
+        root-class-name="root-class-name"
+        :root-style="{ color: 'blue' }"
+        style="color: red"
+        title="你的账户"
+        placement="right"
+        @after-open-change="afterOpenChange"
+    >
+      <a-button @click="logout()" type="primary" danger>退出登录</a-button>
+    </a-drawer>
+    <context-holder />
     <router-view></router-view>
   </el-container>
   <div class="mv_view">
@@ -172,30 +213,13 @@ window.onload = function (){
   left: 10%;
 }
 
-.nav{
+.nav {
   width: 100%;
+  height: 80%;
+  position: relative;
+  top: 20%;
 }
 
-.el-tabs {
-  --el-tabs-header-height: 60px;
-}
-
-.el-tab-pane {
-  display: none;
-}
-
-.navs {
-  width: 80px;
-  height: 60px;
-  font-size: 20px;
-  line-height: 60px;
-  text-align: center;
-  color: #000000;
-  margin: 0 10px;
-  padding: 0;
-  border: none;
-  background-color: #ffffff;
-}
 
 .search-content {
   position: relative;
@@ -218,13 +242,13 @@ window.onload = function (){
 
 .post-button {
   position: relative;
-  bottom: 8%;
+  top: 25%;
 }
 
 .avatar {
   position: relative;
-  left: 15%;
-  top: 20%;
+  left: 20%;
+  bottom: 30%;
 }
 
 /*页面切换*/
@@ -313,4 +337,5 @@ window.onload = function (){
       }
     }
 }
+
 </style>

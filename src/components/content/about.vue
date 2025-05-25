@@ -8,8 +8,8 @@
     <p style="text-align: center;margin-top: 20px;font-size: 40px">TalkTalk</p>
       <el-image style="width: 100px;height: 100px;left: calc(50% - 50px)" src="/talktalk.png"></el-image>
     </el-header>
-    <el-main class="info" style="text-align: center;margin-top: 80px;font-size: 20px;margin-left: 20px">
-      <p>TalkTalk是一个基于Vue3和Element Plus的论坛社区。</p>
+    <el-main class="info" style="text-align: center;margin-top: 100px;font-size: 20px;margin-left: 20px">
+      <p>TalkTalk是一个基于Vue3和Ant Design of Vue的论坛社区(正在被淘汰的UI库:Element Plus)</p>
       <p>用户可以在这里自由讨论与交流。</p>
       <p>感谢您的使用！</p>
       <el-link href="https://github.com/BLACKSHARKPLAYBT/TalkTalk" :underline='false'>

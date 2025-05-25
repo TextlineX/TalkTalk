@@ -4,6 +4,8 @@ let banner = localStorage.getItem('banner')
 let avatar = localStorage.getItem('avatar')
 let desc = localStorage.getItem('desc')
 
+let backend_url = import.meta.env.VITE_BACKEND_URL;
+
 import { useRouter } from "vue-router";
 let router = useRouter();
 
@@ -17,8 +19,27 @@ function check(){
   if(name == null){
     router.push('/login')
   }
+  get_user()
 }
 
+async function get_user(){
+  fetch(`${backend_url}getUserContent`,{
+    method: 'post',
+    mode: 'cors',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      user: name
+    })
+}).then((rs)=>{
+  async function get_data(){
+    let data = await rs.json()
+    let result = await data
+    console.log(result)
+  }
+  get_data()
+})}
 check()
 </script>
 
@@ -38,7 +59,9 @@ check()
         </div>
       </div>
     </div>
-    <div class="down_content"></div>
+    <div class="down_content">
+      <div></div>
+    </div>
   </el-container>
 </template>
 
@@ -105,6 +128,7 @@ check()
 .down_content {
   width: 100%;
   height: 70%;
+  overflow: hidden;
   background-color: #f0f0f0;
 }
 

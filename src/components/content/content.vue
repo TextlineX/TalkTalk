@@ -57,7 +57,6 @@ get()
 
 <template>
 <el-container style="width: 100%;height: 100vh;display: flex;flex-direction: column">
-  <div class="blank"></div>
   <div class="article-up-content">
     <div class="content_box">
       <div class="title"></div>
@@ -88,6 +87,7 @@ get()
 }
 
 .article-up-content{
+  margin-top: 5%;
   width: 100%;
   height: 200px;
   background-color: transparent;

@@ -43,7 +43,7 @@ function post(){
 </script>
 
 <template>
-  <el-container style="width: 100%;height: 100vh;display: flex;flex-direction: column;flex-basis: 0;background-image: url(/background/post.jpg);background-size: cover;">
+  <el-container style="width: 100%;height: 100vh;display: flex;flex-direction: column;flex-basis: 0;background-image: url(/background/post.jpg);background-size: cover;margin-top: 5%;">
     <div class="blank"></div>
     <el-form style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
         <el-input style="width: 20%;margin-top:50px;" placeholder="填写标题" maxlength="30" show-word-limit v-model="title" class="e-title"></el-input>
