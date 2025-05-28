@@ -46,10 +46,10 @@ function post(){
   <el-container style="width: 100%;height: 100vh;display: flex;flex-direction: column;flex-basis: 0;background-image: url(/background/post.jpg);background-size: cover;margin-top: 5%;">
     <div class="blank"></div>
     <el-form style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
-        <el-input style="width: 20%;margin-top:50px;" placeholder="填写标题" maxlength="30" show-word-limit v-model="title" class="e-title"></el-input>
-      <el-input type="textarea" style="width:80%;margin-top:20px;font-size: 20px" :rows="10" v-model="content"></el-input>
-      <el-input placeholder="输入分区" style="width: 100px;height: 30px;position: relative;margin-top: 20px" v-model="category"></el-input>
-      <el-button style="width: 100px;height: 30px;position: relative;margin-top: 20px" type="primary" @click="post()">提交</el-button>
+        <a-input style="width: 20%;margin-top:50px;" placeholder="填写标题" maxlength="30" show-word-limit v-model:value="title" class="e-title"></a-input>
+      <a-textarea style="width:80%;margin-top:20px;font-size: 20px" :rows="10" v-model:value="content"></a-textarea>
+      <a-input placeholder="输入分区" style="width: 100px;height: 30px;position: relative;margin-top: 20px" v-model:value="category"></a-input>
+      <a-button style="width: 100px;height: 30px;position: relative;margin-top: 20px" type="primary" @click="post()">提交</a-button>
       <div class="blank"></div>
     </el-form>
   </el-container>

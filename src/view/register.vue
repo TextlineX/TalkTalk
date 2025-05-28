@@ -106,24 +106,24 @@ onMounted(() => {
 <template>
   <el-form class="form">
     <el-form-item>
-      <el-input class="i" placeholder="请输入用户名" v-model="username"></el-input>
+      <a-input class="i" placeholder="请输入用户名" v-model:value="username"></a-input>
     </el-form-item>
     <el-form-item>
-      <el-input class="i" placeholder="请输入密码" v-model="password" type="password"></el-input>
+      <a-input class="i" placeholder="请输入密码" v-model:value="password" type="password"></a-input>
     </el-form-item>
     <el-form-item>
-      <el-button class="i" type="primary" @click="post">注册</el-button>
+      <a-button class="i" type="primary" @click="post">注册</a-button>
     </el-form-item>
     <el-form-item>
-      <el-button class="b" type="info" @click="function(){router.push('/login')}">返回登录</el-button>
+      <a-button class="b" type="primary" @click="function(){router.push('/login')}">返回登录</a-button>
     </el-form-item>
   </el-form>
   <div class="layer">
     <div class="inner">
       <p>请输入验证码</p>
       <img alt='验证码加载失败' :src="qr">
-      <el-input v-model="ensure" class="ensure_input" :maxlength="4"></el-input>
-      <el-button class="ensure_btn" :type="'primary'" @click="vef">提交</el-button>
+      <a-input v-model:value="ensure" class="ensure_input" :maxlength="4"></a-input>
+      <a-button class="ensure_btn" :type="'primary'" @click="vef">提交</a-button>
     </div>
   </div>
 </template>

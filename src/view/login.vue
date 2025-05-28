@@ -54,10 +54,10 @@ router.push('/news');
   <el-container style="width: 100%;height: 100%;background-image: url(/background/login.png);background-size: cover;">
     <el-form class="form">
       <h1>登录</h1>
-      <el-input v-model="user" placeholder="请输入内容"></el-input>
+      <a-input v-model:value="user" placeholder="请输入内容" style="width:40%;height:30px;margin-top:20px"></a-input>
       <h1>密码</h1>
-      <el-input v-model="password" placeholder="请输入内容"></el-input>
-      <el-button type="primary" @click="login">登录</el-button>
+      <a-input v-model:value="password" placeholder="请输入内容" style="width:40%;height:30px;margin-top:20px"></a-input>
+      <a-button type="primary" @click="login" style="margin-top:20px">登录</a-button>
       <router-link to="/register" style="color: #909399;text-decoration: none;transform: translateX(150px) translateY(8px)">注册</router-link>
     </el-form>
   </el-container>
@@ -91,12 +91,12 @@ router.push('/news');
   box-shadow: 0 0 8px rgba(206, 212, 218,0.8);
 }
 
-.el-input {
+.a-input {
   width: 40%;
   margin: 20px 0 20px 0;
 }
 
-.el-button {
+.a-button {
   width: 40%;
   margin: 20px 0 20px 0;
 }
