@@ -82,7 +82,7 @@ import {
         </div>
         <a-divider />
         <a-space>
-          <a-button type="primary" ghost href="https://github.com/BLACKSHARKPLAYBT/TalkTalk" target="_blank">
+          <a-button type="primary" ghost href="https://github.com/TextlineX/TalkTalk" target="_blank">
             <GithubOutlined /> GitHub
           </a-button>
         </a-space>
