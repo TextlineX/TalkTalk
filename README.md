@@ -23,11 +23,11 @@
 ### 首页
 ![首页](./screenshots/home.png)
 
-### 文章列表
-![文章列表](./screenshots/news.png)
+### 文章
+![文章](./screenshots/news.png)
 
-### 关于我们
-![关于我们](./screenshots/about.png)
+### 分类
+![分类](./screenshots/classify.png)
 
 ## 项目结构
 
