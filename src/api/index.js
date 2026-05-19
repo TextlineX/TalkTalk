@@ -31,6 +31,8 @@ export const articleApi = {
   search: (keyword) => request('/searchArticle', { keyword }),
   getClassify: () => request('/getClassify', {}, 'GET'),
   getByTag: (tag) => request('/getTagArticle', { tag }),
+  addCategory: (name, color) => request('/addCategory', { name, color }),
+  deleteCategory: (id) => request('/deleteCategory', { id }),
 };
 
 // ==================== 点赞相关 ====================
