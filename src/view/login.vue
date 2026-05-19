@@ -9,15 +9,17 @@ const router = useRouter()
 const [messageApi, contextHolder] = message.useMessage()
 
 const loading = ref(false)
-const user = ref('')
-const password = ref('')
+const formState = ref({
+  username: '',
+  password: ''
+})
 
 async function handleLogin() {
-  if (!user.value.trim()) {
+  if (!formState.value.username.trim()) {
     messageApi.warning('请输入用户名')
     return
   }
-  if (!password.value) {
+  if (!formState.value.password) {
     messageApi.warning('请输入密码')
     return
   }
@@ -25,11 +27,11 @@ async function handleLogin() {
   loading.value = true
   try {
     const result = await userApi.login({
-      username: user.value.trim(),
-      password: password.value
+      username: formState.value.username.trim(),
+      password: formState.value.password
     })
 
-    if (result.success && result.status === 200) {
+    if (result.success) {
       const data = result.data
       localStorage.setItem('user', data.name)
       localStorage.setItem('avatar', data.avatar || '')
@@ -63,13 +65,13 @@ async function handleLogin() {
         </template>
 
         <a-form
-          :model="{}"
+          :model="formState"
           layout="vertical"
           @finish="handleLogin"
         >
-          <a-form-item name="username" :rules="[{ required: true, message: '请输入用户名' }]">
+          <a-form-item name="username">
             <a-input
-              v-model:value="user"
+              v-model:value="formState.username"
               placeholder="用户名"
               size="large"
             >
@@ -79,9 +81,9 @@ async function handleLogin() {
             </a-input>
           </a-form-item>
 
-          <a-form-item name="password" :rules="[{ required: true, message: '请输入密码' }]">
+          <a-form-item name="password">
             <a-input-password
-              v-model:value="password"
+              v-model:value="formState.password"
               placeholder="密码"
               size="large"
             >
