@@ -16,6 +16,7 @@ const comments = ref([]);
 const loading = ref(false);
 const submitting = ref(false);
 const commentContent = ref('');
+const currentUserId = ref(localStorage.getItem('id') || '');
 const pagination = ref({
   current: 1,
   pageSize: 20,
@@ -44,10 +45,7 @@ async function fetchComments() {
 
 // 提交评论
 async function handleSubmit() {
-  const userId = localStorage.getItem('id');
-  const userName = localStorage.getItem('user');
-
-  if (!userId || !userName) {
+  if (!currentUserId.value) {
     messageApi.warning('请先登录');
     return;
   }
@@ -57,11 +55,13 @@ async function handleSubmit() {
     return;
   }
 
+  const userName = localStorage.getItem('user') || '';
+
   submitting.value = true;
   try {
     const result = await commentApi.add({
       articleId: props.articleId,
-      userId: parseInt(userId),
+      userId: parseInt(currentUserId.value),
       userName: userName,
       content: commentContent.value
     });
@@ -82,20 +82,18 @@ async function handleSubmit() {
 
 // 删除评论
 async function handleDelete(comment) {
-  const userId = localStorage.getItem('id');
-
-  if (!userId) {
+  if (!currentUserId.value) {
     messageApi.warning('请先登录');
     return;
   }
 
-  if (comment.user_id !== parseInt(userId)) {
+  if (comment.user_id !== parseInt(currentUserId.value)) {
     messageApi.warning('只能删除自己的评论');
     return;
   }
 
   try {
-    const result = await commentApi.delete(comment.id, parseInt(userId));
+    const result = await commentApi.delete(comment.id, parseInt(currentUserId.value));
     if (result.success) {
       messageApi.success('删除成功');
       fetchComments();
@@ -180,7 +178,7 @@ onMounted(() => {
               {{ comment.content }}
             </div>
 
-            <div class="comment-actions" v-if="comment.user_id === parseInt(localStorage.getItem('id'))">
+            <div class="comment-actions" v-if="comment.user_id === parseInt(currentUserId)">
               <a-button type="text" size="small" danger @click="handleDelete(comment)">
                 删除
               </a-button>

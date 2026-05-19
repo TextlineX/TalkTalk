@@ -15,6 +15,7 @@ const article = ref(null);
 const loading = ref(false);
 const liked = ref(false);
 const collected = ref(false);
+const currentUserId = ref(localStorage.getItem('id') || '');
 
 // 获取文章详情
 async function fetchArticle() {
@@ -30,9 +31,7 @@ async function fetchArticle() {
     if (result.success && result.data && result.data[0]) {
       article.value = result.data[0];
 
-      // 检查点赞收藏状态
-      const userId = localStorage.getItem('id');
-      if (userId && article.value) {
+      if (currentUserId.value && article.value) {
         checkLikeStatus();
         checkCollectStatus();
       }
@@ -48,10 +47,9 @@ async function fetchArticle() {
 
 // 检查点赞状态
 async function checkLikeStatus() {
-  const userId = localStorage.getItem('id');
-  if (!userId || !article.value) return;
+  if (!currentUserId.value || !article.value) return;
 
-  const result = await likeApi.check(article.value.id, parseInt(userId));
+  const result = await likeApi.check(article.value.id, parseInt(currentUserId.value));
   if (result.success) {
     liked.value = result.liked;
   }
@@ -59,10 +57,9 @@ async function checkLikeStatus() {
 
 // 检查收藏状态
 async function checkCollectStatus() {
-  const userId = localStorage.getItem('id');
-  if (!userId || !article.value) return;
+  if (!currentUserId.value || !article.value) return;
 
-  const result = await collectApi.check(article.value.id, parseInt(userId));
+  const result = await collectApi.check(article.value.id, parseInt(currentUserId.value));
   if (result.success) {
     collected.value = result.collected;
   }
@@ -70,15 +67,14 @@ async function checkCollectStatus() {
 
 // 点赞
 async function handleLike() {
-  const userId = localStorage.getItem('id');
-  if (!userId) {
+  if (!currentUserId.value) {
     messageApi.warning('请先登录');
     router.push('/login');
     return;
   }
 
   try {
-    const result = await likeApi.toggle(article.value.id, parseInt(userId));
+    const result = await likeApi.toggle(article.value.id, parseInt(currentUserId.value));
     if (result.success) {
       liked.value = result.liked;
       article.value.like_count = result.liked
@@ -93,15 +89,14 @@ async function handleLike() {
 
 // 收藏
 async function handleCollect() {
-  const userId = localStorage.getItem('id');
-  if (!userId) {
+  if (!currentUserId.value) {
     messageApi.warning('请先登录');
     router.push('/login');
     return;
   }
 
   try {
-    const result = await collectApi.toggle(article.value.id, parseInt(userId));
+    const result = await collectApi.toggle(article.value.id, parseInt(currentUserId.value));
     if (result.success) {
       collected.value = result.collected;
       article.value.collect_count = result.collected
