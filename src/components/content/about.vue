@@ -4,7 +4,8 @@ import {
   TeamOutlined,
   StarOutlined,
   TagsOutlined,
-  GithubOutlined
+  GithubOutlined,
+  GlobalOutlined
 } from '@ant-design/icons-vue'
 </script>
 
@@ -77,13 +78,16 @@ import {
           <a-avatar :size="64" src="/avatar.webp" />
           <div class="author-detail">
             <h4>Textline</h4>
-            <p>热爱技术，专注于 Web 开发</p>
+            <p>热爱技术，专注于 Web 全栈开发</p>
           </div>
         </div>
         <a-divider />
         <a-space>
-          <a-button type="primary" ghost href="https://github.com/TextlineX/TalkTalk" target="_blank">
+          <a-button type="primary" ghost href="https://github.com/TextlineX" target="_blank">
             <GithubOutlined /> GitHub
+          </a-button>
+          <a-button type="primary" ghost href="https://talktalk.textline.top" target="_blank">
+            <GlobalOutlined /> 项目主页
           </a-button>
         </a-space>
       </a-card>
