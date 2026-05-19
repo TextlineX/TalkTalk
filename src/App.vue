@@ -1,20 +1,22 @@
 <script setup>
 import saver from '/src/view/saver.vue';
-import { ref } from 'vue';
 
 import 'ant-design-vue/dist/reset.css';
 import '@ant-design/icons-vue';
 </script>
 <template>
-  <a-watermark content="Textline制作">
-    <div style="height: 500px" />
+  <a-watermark content="TalkTalk" :gap-y="100" :z-index="0">
+    <saver />
   </a-watermark>
-  <saver />
 </template>
 
 <style>
 #app {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+}
+
+.ant-watermark {
+  pointer-events: none !important;
 }
 </style>

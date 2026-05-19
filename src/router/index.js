@@ -1,10 +1,10 @@
-import { createRouter,createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
   {
     path: '/',
-    name: 'saver',
-    component: () => import('/src/view/saver.vue')
+    name: 'home',
+    component: () => import('/src/components/content/home.vue')
   },
   {
     path: '/news',
@@ -27,16 +27,6 @@ const routes = [
     component: () => import('/src/components/content/my.vue')
   },
   {
-    path: '/home',
-    name: 'home',
-    component: () => import('/src/components/content/home.vue')
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import('/src/components/content/about.vue')
-  },
-  {
     path: '/classify',
     name: 'classify',
     component: () => import('/src/components/content/classify.vue')
@@ -45,11 +35,6 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: () => import('/src/components/content/settings.vue')
-  },
-  {
-    path: '/toolbox',
-    name: 'toolbox',
-    component: () => import('/src/components/content/toolbox.vue')
   },
   {
     path: '/post',
@@ -65,12 +50,17 @@ const routes = [
     path: '/tag',
     name: 'tag',
     component: () => import('/src/components/content/tag.vue')
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('/src/components/content/about.vue')
   }
-]
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
-})
+});
 
 export default router;

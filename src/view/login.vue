@@ -1,104 +1,176 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'; // 导入 useRouter
-const router = useRouter(); // 获取路由实例
+import { useRouter } from 'vue-router'
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { userApi } from '/src/api/index.js'
+
+const router = useRouter()
+const [messageApi, contextHolder] = message.useMessage()
+
+const loading = ref(false)
 const user = ref('')
 const password = ref('')
-const msg = '未登录'
-const backend_url =import.meta.env.VITE_BACKEND_URL;
 
-function login() {
-  console.log('登录中。。。')
-  async function login() {
-    await fetch(`${backend_url}login`, {
-      mode:'cors',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
-      },
-      body: JSON.stringify({
-        username: user.value,
-        password: password.value
-      })
-    }).then(res =>{
-      async function get_Response(){
-        let vf = await res.json();
-        let vff = vf.data
-        console.log(vff)
-        if(vf.message==='登录成功'){
-          localStorage.setItem('user', user.value);
-          localStorage.setItem('avatar',vff.avatar);
-          localStorage.setItem('banner',vff.banner);
-          localStorage.setItem('desc',vff.description);
-          localStorage.setItem('time',vff.DATE);
-          localStorage.setItem('id',vff.id);
-          router.push('/news');
-        }else{
-          alert('用户名或密码错误');
-        }
-      }
-      get_Response();
-    })
+async function handleLogin() {
+  if (!user.value.trim()) {
+    messageApi.warning('请输入用户名')
+    return
   }
-   login();
-}
+  if (!password.value) {
+    messageApi.warning('请输入密码')
+    return
+  }
 
-if(localStorage.getItem('user')!=null){
-router.push('/news');
+  loading.value = true
+  try {
+    const result = await userApi.login({
+      username: user.value.trim(),
+      password: password.value
+    })
+
+    if (result.success && result.status === 200) {
+      const data = result.data
+      localStorage.setItem('user', data.name)
+      localStorage.setItem('avatar', data.avatar || '')
+      localStorage.setItem('banner', data.banner || '')
+      localStorage.setItem('desc', data.description || '')
+      localStorage.setItem('time', data.date || '')
+      localStorage.setItem('id', data.id)
+      messageApi.success('登录成功')
+      router.push('/news')
+    } else {
+      messageApi.error(result.message || '用户名或密码错误')
+    }
+  } catch (error) {
+    messageApi.error('登录失败，请检查网络')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <template>
-  <el-container style="width: 100%;height: 100%;background-image: url(/background/login.png);background-size: cover;">
-    <el-form class="form">
-      <h1>登录</h1>
-      <a-input v-model:value="user" placeholder="请输入内容" style="width:40%;height:30px;margin-top:20px"></a-input>
-      <h1>密码</h1>
-      <a-input v-model:value="password" placeholder="请输入内容" style="width:40%;height:30px;margin-top:20px"></a-input>
-      <a-button type="primary" @click="login" style="margin-top:20px">登录</a-button>
-      <router-link to="/register" style="color: #909399;text-decoration: none;transform: translateX(150px) translateY(8px)">注册</router-link>
-    </el-form>
-  </el-container>
-  <el-aside>
-    <el-alert type="error">{{msg}}</el-alert>
-  </el-aside>
+  <div class="login-page">
+    <context-holder />
+    <div class="login-container">
+      <a-card class="login-card" :bordered="false">
+        <template #title>
+          <div class="card-title">
+            <a-avatar :size="48" src="/talktalk.png" />
+            <span>TalkTalk</span>
+          </div>
+        </template>
+
+        <a-form
+          :model="{}"
+          layout="vertical"
+          @finish="handleLogin"
+        >
+          <a-form-item name="username" :rules="[{ required: true, message: '请输入用户名' }]">
+            <a-input
+              v-model:value="user"
+              placeholder="用户名"
+              size="large"
+            >
+              <template #prefix>
+                <UserOutlined />
+              </template>
+            </a-input>
+          </a-form-item>
+
+          <a-form-item name="password" :rules="[{ required: true, message: '请输入密码' }]">
+            <a-input-password
+              v-model:value="password"
+              placeholder="密码"
+              size="large"
+            >
+              <template #prefix>
+                <LockOutlined />
+              </template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              size="large"
+              block
+              :loading="loading"
+            >
+              登录
+            </a-button>
+          </a-form-item>
+
+          <div class="register-link">
+            还没有账号？
+            <router-link to="/register">立即注册</router-link>
+          </div>
+        </a-form>
+      </a-card>
+    </div>
+  </div>
 </template>
 
-<style scoped>
-.el-aside {
-  position:relative;
-  top: 10px;
-  right: 20px;
-  width: 200px;
-  height: 100px;
-  float: right;
-}
-
-.form {
-  position: absolute;
-  width: calc(60% - 20px);
-  height: 400px;
-  top: 20%;
-  left: calc(50% - 30%);
-  background: transparent;
+<style lang="less" scoped>
+.login-page {
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-basis: 0;
-  box-shadow: 0 0 8px rgba(206, 212, 218,0.8);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
 }
 
-.a-input {
-  width: 40%;
-  margin: 20px 0 20px 0;
+.login-container {
+  width: 100%;
+  max-width: 400px;
 }
 
-.a-button {
-  width: 40%;
-  margin: 20px 0 20px 0;
+.login-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+  :deep(.ant-card-head) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+
+    .ant-card-head-title {
+      padding: 20px 0;
+    }
+  }
+
+  :deep(.ant-card-body) {
+    padding: 32px;
+  }
 }
 
+.card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: white;
+
+  span {
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.register-link {
+  text-align: center;
+  color: #666;
+
+  a {
+    color: #667eea;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
 </style>

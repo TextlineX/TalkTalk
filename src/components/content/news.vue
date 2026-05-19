@@ -1,263 +1,350 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-let router = useRouter()
-import { ref } from 'vue';
-let current = ref(1)
-let total = ref(20)
+import { ArrowUpOutlined, LikeOutlined, StarOutlined, ShareAltOutlined, EyeOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
+import { articleApi, likeApi, collectApi } from '/src/api/index.js';
 
-let backend_url =import.meta.env.VITE_BACKEND_URL;
-async function init(){
-  fetch(`${backend_url}getArticle`,{
-    method: 'post',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },body: JSON.stringify({current: current.value, pageSize: total.value})
-  }).then(res=> {
-    async function get_Response(){
-      let vf = await res.json();
-      console.log(vf)
-      loadA(vf)
+const router = useRouter();
+const [messageApi, contextHolder] = message.useMessage();
+
+// 响应式数据
+const articles = ref([]);
+const current = ref(1);
+const total = ref(0);
+const loading = ref(false);
+
+// 获取文章列表
+async function fetchArticles() {
+  loading.value = true;
+  try {
+    const result = await articleApi.getList({ current: current.value, pageSize: 10 });
+    if (result.data) {
+      articles.value = result.data;
+      total.value = result.total || result.data.length;
     }
-    get_Response();
-  })
-}
-
-function loadA(data){
-  console.log(data[0]['title'])
-  for(let i=0;i<data.length;i++){
-    let wrapper = document.querySelector('.wrapper');
-    let box = document.createElement('div');
-    box.className = `box data${i}`;
-    let date = data[i]['DATE'].split(' ')[0]
-    date = date.split('/')
-    box.innerHTML = `
-         <h1>${data[i]['title']}</h1>
-        <div class="desc">${data[i]['content']}</div>
-        <div class="tag">${data[i]['label']}</div>
-        <div class="time">${date[0]}年${date[1]}月${date[2]}日</div>
-        <div class="action">
-        <ol class="like">点赞</ol>
-        <ol class="collect">收藏</ol>
-        <ol class="share">分享</ol>
-</div>
-    `
-    wrapper.insertBefore(box,wrapper.children[0])
-  }
-  let wrapper = document.querySelector('.wrapper')
-  let bb = document.createElement('div');
-  bb.className = 'news_wrapper';
-  wrapper.appendChild(bb)
-  for(let i = 0;i < data.length;i++){
-    let get_box = document.querySelector(`.data${i}`);
-    let get_box_label = document.querySelector(`.data${i} .tag`)
-    get_box.addEventListener('click',function(e){
-      articleClick(data[i]['id'])
-    })
-    get_box_label.addEventListener('click',function(e){
-      tagClick(data[i]['label'])
-      e.stopPropagation()
-    })
+  } catch (error) {
+    messageApi.error('获取文章失败');
+  } finally {
+    loading.value = false;
   }
 }
 
-function pagesChange(){
-  deleteAll()
-  init()
+// 翻页
+function onPageChange(page) {
+  current.value = page;
+  fetchArticles();
+  scrollToTop();
 }
 
-function up(){
-  let wrapper = document.querySelector('.wrapper')
-  wrapper.scrollIntoView({behavior: 'smooth'})
-  router.push('#01')
+// 回到顶部
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function deleteAll(){
-  let wrapper = document.querySelector('.wrapper')
-  let news_wrapper = document.querySelector('.news_wrapper')
-  wrapper.removeChild(news_wrapper)
-  let all_box = document.querySelectorAll('.box')
-  for(let i = 0;i<all_box.length;i++){
-    wrapper.removeChild(all_box[i])
+// 点击文章
+function goToArticle(id) {
+  router.push(`/content?${id}`);
+}
+
+// 点击标签
+function goToTag(tag, event) {
+  event.stopPropagation();
+  router.push(`/tag?${encodeURIComponent(tag)}`);
+}
+
+// 点赞
+async function handleLike(article, event) {
+  event.stopPropagation();
+  const userId = localStorage.getItem('id');
+
+  if (!userId) {
+    messageApi.warning('请先登录');
+    router.push('/login');
+    return;
+  }
+
+  try {
+    const result = await likeApi.toggle(article.id, parseInt(userId));
+    if (result.success) {
+      // 更新本地数据
+      const index = articles.value.findIndex(a => a.id === article.id);
+      if (index !== -1) {
+        articles.value[index].liked = result.liked;
+        articles.value[index].like_count = result.liked
+          ? (articles.value[index].like_count || 0) + 1
+          : Math.max(0, (articles.value[index].like_count || 0) - 1);
+      }
+      messageApi.success(result.message);
+    }
+  } catch (error) {
+    messageApi.error('操作失败');
   }
 }
 
+// 收藏
+async function handleCollect(article, event) {
+  event.stopPropagation();
+  const userId = localStorage.getItem('id');
 
-function articleClick(link){
-  router.push(`/content?${link}`)
+  if (!userId) {
+    messageApi.warning('请先登录');
+    router.push('/login');
+    return;
+  }
+
+  try {
+    const result = await collectApi.toggle(article.id, parseInt(userId));
+    if (result.success) {
+      const index = articles.value.findIndex(a => a.id === article.id);
+      if (index !== -1) {
+        articles.value[index].collected = result.collected;
+        articles.value[index].collect_count = result.collected
+          ? (articles.value[index].collect_count || 0) + 1
+          : Math.max(0, (articles.value[index].collect_count || 0) - 1);
+      }
+      messageApi.success(result.message);
+    }
+  } catch (error) {
+    messageApi.error('操作失败');
+  }
 }
 
-function tagClick(tagLink) {
-  router.push(`/tag?${tagLink}`)
+// 分享
+function handleShare(article, event) {
+  event.stopPropagation();
+  const url = `${window.location.origin}/#/content?${article.id}`;
+  navigator.clipboard.writeText(url).then(() => {
+    messageApi.success('链接已复制到剪贴板');
+  }).catch(() => {
+    messageApi.info('请手动复制链接');
+  });
 }
 
-init()
+// 格式化日期
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split(' ')[0].split('/');
+  if (parts.length >= 3) {
+    return `${parts[0]}年${parts[1]}月${parts[2]}日`;
+  }
+  return dateStr;
+}
+
+// 初始化
+onMounted(() => {
+  fetchArticles();
+});
 </script>
 
 <template>
   <a-layout-content class="content">
-    <a-layout-content class="wrapper">
-      <div class="wrapper_01" id="01">
+    <context-holder />
+
+    <!-- 加载状态 -->
+    <a-spin :spinning="loading">
+      <div class="article-list">
+        <!-- 文章卡片 -->
+        <div
+          v-for="article in articles"
+          :key="article.id"
+          class="article-card"
+          @click="goToArticle(article.id)"
+        >
+          <h2 class="article-title">{{ article.title }}</h2>
+
+          <div class="article-content">{{ article.content }}</div>
+
+          <div class="article-meta">
+            <a-tag
+              class="article-tag"
+              color="blue"
+              @click="goToTag(article.label, $event)"
+            >
+              {{ article.label }}
+            </a-tag>
+
+            <span class="article-date">{{ formatDate(article.date) }}</span>
+
+            <span class="article-stats">
+              <EyeOutlined /> {{ article.view_count || 0 }}
+            </span>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="article-actions" @click.stop>
+            <a-button
+              type="text"
+              :class="{ 'active': article.liked }"
+              @click="handleLike(article, $event)"
+            >
+              <LikeOutlined />
+              <span>{{ article.like_count || 0 }}</span>
+            </a-button>
+
+            <a-button
+              type="text"
+              :class="{ 'active': article.collected }"
+              @click="handleCollect(article, $event)"
+            >
+              <StarOutlined />
+              <span>{{ article.collect_count || 0 }}</span>
+            </a-button>
+
+            <a-button type="text" @click="handleShare(article, $event)">
+              <ShareAltOutlined />
+              <span>分享</span>
+            </a-button>
+          </div>
+        </div>
+
+        <!-- 空状态 -->
+        <a-empty v-if="articles.length === 0 && !loading" description="暂无文章" />
       </div>
-      <a-pagination v-model:current="current" :total="total" class="pages" @change="pagesChange()"  />
-      <a-float-button class="float_button" icon="up" @click="up()">
-        <template #icon>
-          <ArrowUpOutlined />
-        </template>
-      </a-float-button>
-    </a-layout-content>
+    </a-spin>
+
+    <!-- 分页 -->
+    <div class="pagination-wrapper">
+      <a-pagination
+        v-model:current="current"
+        :total="total"
+        :page-size="10"
+        show-quick-jumper
+        @change="onPageChange"
+      />
+    </div>
+
+    <!-- 回到顶部 -->
+    <a-back-top :visibility-height="300" />
   </a-layout-content>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .content {
   width: 100%;
-  height: auto;
+  min-height: 100vh;
+  background-image: url("/background/news.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+}
+
+.article-list {
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 16px;
+}
+
+.article-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.article-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.article-content {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 12px;
+}
+
+.article-meta {
+  display: flex;
   align-items: center;
-  background-image: url("/background/news.jpg");
-}
-
-.wrapper_01 {
-  width: 100%;
-  height: 100px;
-  position: relative;
-}
-
-.wrapper {
-  width: 100%;
-  height: 100%;
-  display: inline-flex;
+  gap: 12px;
   flex-wrap: wrap;
-  justify-content: space-around;
+}
+
+.article-tag {
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.article-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.article-stats {
+  font-size: 12px;
+  color: #999;
+  display: flex;
   align-items: center;
-  position: relative;
-  left: 0;
+  gap: 4px;
+}
 
-  .box {
-    width: 90%;
-    height: 200px;
-    background-color: rgba(222, 222, 222, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    transition: all 0.5s ease-in-out;
-    display: grid;
-    overflow: hidden;
-    white-space: wrap;
-    margin-top: 20px;
-    cursor: context-menu;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.article-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
 
-    h1 {
-      width: 88%;
-      margin: 10px;
-      font-size: 20px;
-      font-weight: bold;
-      position: relative;
-      left: 20px;
+  .ant-btn {
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+      color: #1890ff;
     }
 
-    .desc {
-      margin: 10px 10px 10px 20px;
-      width: 99%;
-      height: 20px;
-      font-size: 15px;
-      font-weight: lighter;
-      position: relative;
-      left: 20px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-      .tag {
-        margin: 10px;
-        width: fit-content;
-        height: 40px;
-        font-size: 15px;
-        padding: 1%;
-        text-align: center;
-        border-radius: 15px;
-        line-height: 15px;
-        font-weight: bold;
-        color: rgba(36, 97, 255, 0.86);
-        background-color:rgba(156, 181, 255, 0.86);
-        position: relative;
-        left: 20px;
-        top: 50px;
-        transition-duration: 300ms;
-        transition-delay: 200ms;
-        transition-timing-function: ease;
-        cursor: pointer;
-      }
-
-    .tag:hover {
-      background-color: rgba(87, 127, 255, 0.86);
+    &.active {
+      color: #ff4d4f;
     }
 
-    .time {
-      width: auto;
-      margin: 10px;
-      font-size: 15px;
-      position: relative;
-      left: 90%;
-      top: 10px;
-      font-weight: 200;
-    }
-
-    .action {
-      width: 30%;
-      height: 40px;
-      position: relative;
-      left: 50%;
-      bottom: 40px;
-      background-color: rgba(231, 231, 231, 0.5);
-      border-radius: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      transition: all 0.5s ease-in-out;
-      display: inline-flex;
-      justify-content: space-around;
-      align-items: center;
-
-      ol {
-        margin-top: 10px;
-        color:#6c757d;
-        transition: 200ms ease-in-out;
-        cursor: pointer;
-      }
-
-      ol:hover {
-        color: #007bff;
-      }
-
-      ol::before {
-        font-family: iconfont,serif;
-        margin-right: 5px;
-      }
-
-      .like::before {
-        content: "\F087";
-      }
-
-      .collect::before {
-        content: "\2b50";
-      }
-
-      .share::before {
-        content: "\f08e";
-      }
+    span {
+      font-size: 13px;
     }
   }
 }
 
-.news_wrapper {
-  width: 100%;
-  height: 100px;
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding-bottom: 40px;
 }
 
-.pages {
-  position: relative;
-  bottom: 0;
+// 响应式
+@media (max-width: 768px) {
+  .content {
+    padding: 12px;
+  }
+
+  .article-card {
+    padding: 16px;
+  }
+
+  .article-title {
+    font-size: 16px;
+  }
 }
 </style>

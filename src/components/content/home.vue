@@ -1,20 +1,311 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { FileTextOutlined, TeamOutlined, CommentOutlined, HeartOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { articleApi, adminApi } from '/src/api/index.js'
 
+const router = useRouter()
+const [messageApi, contextHolder] = message.useMessage()
+
+const stats = ref({
+  articles: 0,
+  users: 0,
+  comments: 0,
+  likes: 0
+})
+const latestArticles = ref([])
+const loading = ref(false)
+
+async function fetchStats() {
+  try {
+    const result = await adminApi.getStatistics()
+    if (result.success) {
+      stats.value = {
+        articles: result.data.articles,
+        users: result.data.users,
+        comments: result.data.comments,
+        likes: result.data.likes
+      }
+    }
+  } catch (error) {
+    console.error('获取统计失败:', error)
+  }
+}
+
+async function fetchLatestArticles() {
+  loading.value = true
+  try {
+    const result = await articleApi.getList({ current: 1, pageSize: 5 })
+    if (result.data) {
+      latestArticles.value = result.data
+    }
+  } catch (error) {
+    messageApi.error('获取文章失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+function goToArticle(id) {
+  router.push(`/content?${id}`)
+}
+
+function goToNews() {
+  router.push('/news')
+}
+
+onMounted(() => {
+  fetchStats()
+  fetchLatestArticles()
+})
 </script>
 
 <template>
-  <h1>首页</h1>
-  <p>首页或主页（英语：home page或homepage）是计算机术语，各网站的主要网页——一般是指访问一个应用程序启动时始终显示在网站或网页浏览器中的一个或多个初始网页等画面存在的站点，在这种解释里亦称起始页（英语：start page）。从更广泛的意义上说，主页被视为互联网网站的一个名称，专指网站本身。
+  <div class="home-page">
+    <context-holder />
 
-    首页通常提供位于页面层次结构底部的关于网站所有者和内容的信息，可能被分成不同的部分。首页大部分都位于页面层次结构的顶部（第一页），可能按节排列。多语制网站通常为多种可用语言提供一个主页或是一个网站提供多个可用语言的超链接列表。
+    <!-- Hero 区域 -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">欢迎来到 TalkTalk</h1>
+        <p class="hero-desc">一个自由分享、交流思想的社区平台</p>
+        <a-space>
+          <a-button type="primary" size="large" @click="goToNews">
+            浏览文章
+          </a-button>
+          <a-button size="large" @click="router.push('/post')">
+            分享内容
+          </a-button>
+        </a-space>
+      </div>
+    </div>
 
-    跨国公司的主页有时包含到其子公司简单的地方超链接列表。还可以在地方超链接找到每个可用语言的超链接列表，并且可以自动检测访问者的语言，而通常在主页本身也中可以找到语言超链接（多语制）。
+    <!-- 统计卡片 -->
+    <div class="stats-section">
+      <div class="stats-container">
+        <a-row :gutter="[16, 16]">
+          <a-col :xs="12" :sm="6">
+            <a-card class="stat-card" hoverable>
+              <a-statistic
+                :value="stats.articles"
+                :value-style="{ color: '#1890ff' }"
+              >
+                <template #prefix>
+                  <FileTextOutlined />
+                </template>
+                <template #title>文章总数</template>
+              </a-statistic>
+            </a-card>
+          </a-col>
+          <a-col :xs="12" :sm="6">
+            <a-card class="stat-card" hoverable>
+              <a-statistic
+                :value="stats.users"
+                :value-style="{ color: '#52c41a' }"
+              >
+                <template #prefix>
+                  <TeamOutlined />
+                </template>
+                <template #title>用户总数</template>
+              </a-statistic>
+            </a-card>
+          </a-col>
+          <a-col :xs="12" :sm="6">
+            <a-card class="stat-card" hoverable>
+              <a-statistic
+                :value="stats.comments"
+                :value-style="{ color: '#faad14' }"
+              >
+                <template #prefix>
+                  <CommentOutlined />
+                </template>
+                <template #title>评论总数</template>
+              </a-statistic>
+            </a-card>
+          </a-col>
+          <a-col :xs="12" :sm="6">
+            <a-card class="stat-card" hoverable>
+              <a-statistic
+                :value="stats.likes"
+                :value-style="{ color: '#f5222d' }"
+              >
+                <template #prefix>
+                  <HeartOutlined />
+                </template>
+                <template #title>点赞总数</template>
+              </a-statistic>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+    </div>
 
-    在内容可能会令人感到不适的网页里，首页通常会出现警告和邀请该访问网站，要么进入，要么离开。在以广告为导向的首页和一些较小的首页上，有时会有一个分散注意力的介绍动画。为了节省时间，它通常是可以绕过、跳过的。最后，在所有主要网站上，页面入口也是页面招待处。
+    <!-- 最新文章 -->
+    <div class="articles-section">
+      <div class="articles-container">
+        <div class="section-header">
+          <h2 class="section-title">最新文章</h2>
+          <a-button type="link" @click="goToNews">查看更多</a-button>
+        </div>
 
-    通常，网站上的每个页面都有一个到主页的超链接，无论页面在哪里，都可以很容易地返回。根据三次连点规则，访问者必须能够通过主页上最多三个超链接访问网站的任何页面。</p>
+        <a-spin :spinning="loading">
+          <div class="article-list" v-if="latestArticles.length > 0">
+            <div
+              v-for="article in latestArticles"
+              :key="article.id"
+              class="article-item"
+              @click="goToArticle(article.id)"
+            >
+              <h4 class="article-title">{{ article.title }}</h4>
+              <p class="article-content">{{ article.content }}</p>
+              <div class="article-meta">
+                <a-tag color="blue">{{ article.label }}</a-tag>
+                <span class="article-author">@{{ article.username }}</span>
+              </div>
+            </div>
+          </div>
+          <a-empty v-else description="暂无文章" />
+        </a-spin>
+      </div>
+    </div>
+  </div>
 </template>
 
-<style scoped>
+<style lang="less" scoped>
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
 
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 80px 20px;
+  text-align: center;
+  color: white;
+}
+
+.hero-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: white;
+}
+
+.hero-desc {
+  font-size: 18px;
+  margin-bottom: 32px;
+  opacity: 0.9;
+}
+
+.stats-section {
+  padding: 40px 20px;
+  margin-top: -40px;
+}
+
+.stats-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  border-radius: 12px;
+  text-align: center;
+
+  :deep(.ant-statistic-title) {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+}
+
+.articles-section {
+  padding: 40px 20px;
+}
+
+.articles-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.article-item {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.article-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.article-content {
+  font-size: 14px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 12px;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .article-author {
+    font-size: 12px;
+    color: #999;
+  }
+}
+
+// 响应式
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 20px;
+  }
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .hero-desc {
+    font-size: 16px;
+  }
+}
 </style>

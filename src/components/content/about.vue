@@ -1,39 +1,201 @@
 <script setup>
-
+import {
+  FileTextOutlined,
+  TeamOutlined,
+  StarOutlined,
+  TagsOutlined,
+  GithubOutlined
+} from '@ant-design/icons-vue'
 </script>
 
 <template>
-  <el-container  style="width: 100%; height: 90%">
-    <el-header>
-    <p style="text-align: center;margin-top: 20px;font-size: 40px">TalkTalk</p>
-      <el-image style="width: 100px;height: 100px;left: calc(50% - 50px)" src="/talktalk.png"></el-image>
-    </el-header>
-    <el-main class="info" style="text-align: center;margin-top: 100px;font-size: 20px;margin-left: 20px">
-      <p>TalkTalk是一个基于Vue3和Ant Design of Vue的论坛社区(正在被淘汰的UI库:Element Plus)</p>
-      <p>用户可以在这里自由讨论与交流。</p>
-      <p>感谢您的使用！</p>
-      <el-link href="https://github.com/BLACKSHARKPLAYBT/TalkTalk" :underline='false'>
-        <el-image src="/icons/github.png" style="width: 30px;height: 30px;margin-right: 10px"></el-image>
-      </el-link>
-    </el-main>
-    <el-footer class="footer" style="text-align: center">
-      <p style="margin-bottom: 5px">Copyright © 2025 TalkTalk</p>
-      <p style="">Created by Textline</p>
-    </el-footer>
-  </el-container>
+  <div class="about-page">
+    <div class="about-container">
+      <!-- 头像区域 -->
+      <div class="avatar-section">
+        <a-avatar :size="120" src="/talktalk.png" />
+        <h1 class="site-name">TalkTalk</h1>
+        <p class="site-desc">一个自由分享、交流思想的社区平台</p>
+      </div>
+
+      <!-- 功能介绍 -->
+      <a-card class="feature-card" title="功能特点">
+        <a-row :gutter="[16, 16]">
+          <a-col :xs="24" :sm="12" :md="6">
+            <div class="feature-item">
+              <div class="feature-icon" style="background: #1890ff">
+                <FileTextOutlined />
+              </div>
+              <h4>文章发布</h4>
+              <p>支持发布长文，分享你的见解</p>
+            </div>
+          </a-col>
+          <a-col :xs="24" :sm="12" :md="6">
+            <div class="feature-item">
+              <div class="feature-icon" style="background: #52c41a">
+                <TeamOutlined />
+              </div>
+              <h4>社区互动</h4>
+              <p>评论互动，结识志同道合的朋友</p>
+            </div>
+          </a-col>
+          <a-col :xs="24" :sm="12" :md="6">
+            <div class="feature-item">
+              <div class="feature-icon" style="background: #faad14">
+                <StarOutlined />
+              </div>
+              <h4>收藏点赞</h4>
+              <p>收藏喜欢的内容，支持作者</p>
+            </div>
+          </a-col>
+          <a-col :xs="24" :sm="12" :md="6">
+            <div class="feature-item">
+              <div class="feature-icon" style="background: #f5222d">
+                <TagsOutlined />
+              </div>
+              <h4>分类标签</h4>
+              <p>按分类浏览，快速找到感兴趣的内容</p>
+            </div>
+          </a-col>
+        </a-row>
+      </a-card>
+
+      <!-- 技术栈 -->
+      <a-card class="tech-card" title="技术栈">
+        <a-space wrap>
+          <a-tag color="blue">Vue 3</a-tag>
+          <a-tag color="green">Ant Design Vue</a-tag>
+          <a-tag color="orange">Vite</a-tag>
+          <a-tag color="purple">Express</a-tag>
+          <a-tag color="cyan">PostgreSQL</a-tag>
+        </a-space>
+      </a-card>
+
+      <!-- 关于作者 -->
+      <a-card class="author-card" title="关于作者">
+        <div class="author-info">
+          <a-avatar :size="64" src="/avatar.webp" />
+          <div class="author-detail">
+            <h4>Textline</h4>
+            <p>热爱技术，专注于 Web 开发</p>
+          </div>
+        </div>
+        <a-divider />
+        <a-space>
+          <a-button type="primary" ghost href="https://github.com/BLACKSHARKPLAYBT/TalkTalk" target="_blank">
+            <GithubOutlined /> GitHub
+          </a-button>
+        </a-space>
+      </a-card>
+
+      <!-- 版权信息 -->
+      <div class="copyright">
+        <p>Copyright © 2025 TalkTalk</p>
+        <p>Created by Textline</p>
+      </div>
+    </div>
+  </div>
 </template>
-<style scoped>
-.info p {
-  margin-top: 20px;
+
+<style lang="less" scoped>
+.about-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40px 20px;
 }
 
-@media screen and (max-width: 750px) {
-  .info p {
-    font-size: 15px;
+.about-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.avatar-section {
+  text-align: center;
+  padding: 40px 0;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  .site-name {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+    color: #333;
   }
 
-  .footer {
-    margin-bottom: 20%;
+  .site-desc {
+    font-size: 16px;
+    color: #666;
+  }
+}
+
+.feature-card,
+.tech-card,
+.author-card {
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  :deep(.ant-card-head) {
+    font-weight: 600;
+  }
+}
+
+.feature-item {
+  text-align: center;
+  padding: 16px;
+
+  .feature-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 24px;
+    color: white;
+  }
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .author-detail {
+    h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    p {
+      color: #666;
+      margin: 0;
+    }
+  }
+}
+
+.copyright {
+  text-align: center;
+  padding: 24px;
+  color: #999;
+  font-size: 14px;
+
+  p {
+    margin: 4px 0;
   }
 }
 </style>

@@ -1,193 +1,320 @@
 <script setup>
-import { useRouter } from 'vue-router'; // 导入 useRouter
-import { ref,onMounted } from 'vue'
-let backend_url =import.meta.env.VITE_BACKEND_URL;
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { UserOutlined, LockOutlined, ReloadOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { userApi } from '/src/api/index.js'
 
-let router = useRouter(); // 获取路由实例
-let ensure = ref('');
+const router = useRouter()
+const [messageApi, contextHolder] = message.useMessage()
 
-let username = ref('');
-let password = ref('');
+const loading = ref(false)
+const formState = ref({
+  username: '',
+  password: '',
+  confirmPassword: '',
+  agree: false
+})
 
-let reu = 'fail';
-let qr =''
-let iD = ''
+// 验证码相关
+const captchaText = ref('')
+const captchaInput = ref('')
+const captchaCanvas = ref(null)
 
-function post(){
-  if(reu==='fail'){
-    document.querySelector('.layer').style.display = 'grid';
-    async function get(){
-      const back = await fetch('https://v2.xxapi.cn/api/captcha?type=math',{
-        mode: 'cors'
-      });
-      let data = await back.json();
-      console.log(data);
-      qr = data.data.url;
-      iD = data.data.id;
-      document.querySelector('.inner img').src=`${qr}`;
-    }
+// 生成验证码
+function generateCaptcha() {
+  const canvas = captchaCanvas.value
+  if (!canvas) return
 
-    get();
-  }else{
+  const ctx = canvas.getContext('2d')
+  const width = canvas.width
+  const height = canvas.height
 
+  // 生成随机字符
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
+  let text = ''
+  for (let i = 0; i < 4; i++) {
+    text += chars[Math.floor(Math.random() * chars.length)]
+  }
+  captchaText.value = text
+
+  // 绘制背景
+  ctx.fillStyle = '#f0f0f0'
+  ctx.fillRect(0, 0, width, height)
+
+  // 绘制干扰线
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = `rgba(${Math.random() * 200}, ${Math.random() * 200}, ${Math.random() * 200}, 0.5)`
+    ctx.beginPath()
+    ctx.moveTo(Math.random() * width, Math.random() * height)
+    ctx.lineTo(Math.random() * width, Math.random() * height)
+    ctx.stroke()
+  }
+
+  // 绘制字符
+  ctx.font = 'bold 28px Arial'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  for (let i = 0; i < text.length; i++) {
+    const x = (width / 5) * (i + 1)
+    const y = height / 2 + (Math.random() - 0.5) * 10
+    const angle = (Math.random() - 0.5) * 0.3
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(angle)
+    ctx.fillStyle = `rgba(${Math.random() * 100}, ${Math.random() * 100}, ${Math.random() * 100}, 0.8)`
+    ctx.fillText(text[i], 0, 0)
+    ctx.restore()
   }
 }
 
-function vef(){
-  async function get_2(){
-    const vf = await fetch(`https://v2.xxapi.cn/api/captcha?id=${iD}&key=${ensure.value}`,{
-      method: 'POST',
-      redirect: 'follow',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      mode: 'cors'
-    });
-    let data = await vf.json();
-    console.log(data);
-    if(data.data==='验证成功'){
-      await register_v();
-      await router.push('/login');
-    }else{
-      alert('验证失败');
-      post()
-    }
+async function handleRegister() {
+  if (!formState.value.username.trim()) {
+    messageApi.warning('请输入用户名')
+    return
   }
-  get_2();
-}
-
-async function register_v(){
-  if (username.value === '' || password.value === '') {
-    alert('用户名或密码不能为空');
-    return;
-  }else if(username.value.length<3){
-    alert('用户名长度不能小于3');
-    return;
-  }else if(password.value.length<6){
-    alert('密码长度不能小于6');
+  if (formState.value.username.trim().length < 3) {
+    messageApi.warning('用户名长度不能少于3位')
+    return
+  }
+  if (!formState.value.password) {
+    messageApi.warning('请输入密码')
+    return
+  }
+  if (formState.value.password.length < 6) {
+    messageApi.warning('密码长度不能少于6位')
+    return
+  }
+  if (formState.value.password !== formState.value.confirmPassword) {
+    messageApi.warning('两次输入的密码不一致')
+    return
+  }
+  if (!captchaInput.value.trim()) {
+    messageApi.warning('请输入验证码')
+    return
+  }
+  if (captchaInput.value.toLowerCase() !== captchaText.value.toLowerCase()) {
+    messageApi.warning('验证码错误')
+    captchaInput.value = ''
+    generateCaptcha()
+    return
   }
 
-  await fetch(`${backend_url}register`,{
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0'
-    },
-    mode: 'cors',
-    body: JSON.stringify({
-      'name': username.value,
-      'password': password.value,
-      'date': new Date().toISOString(),
-      'sex': '默认',
-      'description': ' ',
-      'avatar': 'https://img.textline.top/file/1747010554838_avatar.webp',
-      'banner': 'https://img.textline.top/file/1740911096111_rg2.jpg',
-      'phone': '',
-      'email': ''
+  loading.value = true
+  try {
+    const result = await userApi.register({
+      name: formState.value.username.trim(),
+      password: formState.value.password,
+      date: new Date().toISOString(),
+      sex: '默认',
+      description: '这个人很懒，什么都没写',
+      avatar: '',
+      banner: '',
+      phone: '',
+      email: ''
     })
-  }).then((rs) => {
-    async function rs_db(){
-      let vf = await rs.json();
-      if (vf.status==409){
-        alert('用户名已存在');
-      }
+
+    if (result.success) {
+      messageApi.success('注册成功！请登录')
+      setTimeout(() => {
+        router.push('/login')
+      }, 1000)
+    } else {
+      messageApi.error(result.message || '注册失败')
     }
-    rs_db();
-  })
+  } catch (error) {
+    messageApi.error('注册失败，请检查网络')
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
-  // 在组件挂载后隐藏layer
-  document.querySelector('.layer').style.display = 'none';
-});
+  generateCaptcha()
+})
 </script>
 
 <template>
-  <el-form class="form">
-    <el-form-item>
-      <a-input class="i" placeholder="请输入用户名" v-model:value="username"></a-input>
-    </el-form-item>
-    <el-form-item>
-      <a-input class="i" placeholder="请输入密码" v-model:value="password" type="password"></a-input>
-    </el-form-item>
-    <el-form-item>
-      <a-button class="i" type="primary" @click="post">注册</a-button>
-    </el-form-item>
-    <el-form-item>
-      <a-button class="b" type="primary" @click="function(){router.push('/login')}">返回登录</a-button>
-    </el-form-item>
-  </el-form>
-  <div class="layer">
-    <div class="inner">
-      <p>请输入验证码</p>
-      <img alt='验证码加载失败' :src="qr">
-      <a-input v-model:value="ensure" class="ensure_input" :maxlength="4"></a-input>
-      <a-button class="ensure_btn" :type="'primary'" @click="vef">提交</a-button>
+  <div class="register-page">
+    <context-holder />
+    <div class="register-container">
+      <a-card class="register-card" :bordered="false">
+        <template #title>
+          <div class="card-title">
+            <a-avatar :size="48" src="/talktalk.png" />
+            <span>注册 TalkTalk</span>
+          </div>
+        </template>
+
+        <a-form
+          :model="formState"
+          layout="vertical"
+          @finish="handleRegister"
+        >
+          <a-form-item
+            name="username"
+            :rules="[
+              { required: true, message: '请输入用户名' },
+              { min: 3, message: '用户名长度不能少于3位' }
+            ]"
+          >
+            <a-input
+              v-model:value="formState.username"
+              placeholder="用户名"
+              size="large"
+            >
+              <template #prefix>
+                <UserOutlined />
+              </template>
+            </a-input>
+          </a-form-item>
+
+          <a-form-item
+            name="password"
+            :rules="[
+              { required: true, message: '请输入密码' },
+              { min: 6, message: '密码长度不能少于6位' }
+            ]"
+          >
+            <a-input-password
+              v-model:value="formState.password"
+              placeholder="密码"
+              size="large"
+            >
+              <template #prefix>
+                <LockOutlined />
+              </template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item
+            name="confirmPassword"
+            :rules="[{ required: true, message: '请确认密码' }]"
+          >
+            <a-input-password
+              v-model:value="formState.confirmPassword"
+              placeholder="确认密码"
+              size="large"
+            >
+              <template #prefix>
+                <LockOutlined />
+              </template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item label="验证码">
+            <div class="captcha-wrapper">
+              <a-input
+                v-model:value="captchaInput"
+                placeholder="请输入验证码"
+                size="large"
+                style="flex: 1"
+              />
+              <canvas
+                ref="captchaCanvas"
+                width="120"
+                height="40"
+                class="captcha-canvas"
+                @click="generateCaptcha"
+              />
+              <a-button size="large" @click="generateCaptcha">
+                <ReloadOutlined />
+              </a-button>
+            </div>
+          </a-form-item>
+
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              size="large"
+              block
+              :loading="loading"
+            >
+              注册
+            </a-button>
+          </a-form-item>
+
+          <div class="login-link">
+            已有账号？
+            <router-link to="/login">立即登录</router-link>
+          </div>
+        </a-form>
+      </a-card>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
-* {
-  text-align: center;
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  padding: 20px;
 }
 
-.form {
-  width: 60%;
-  height: auto;
+.register-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.register-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+  :deep(.ant-card-head) {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+
+    .ant-card-head-title {
+      padding: 20px 0;
+    }
+  }
+
+  :deep(.ant-card-body) {
+    padding: 32px;
+  }
+}
+
+.card-title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  left: 0;
+  gap: 12px;
+  color: white;
 
-  .i{
-    width: 100%;
-    height: 40px;
+  span {
+    font-size: 20px;
+    font-weight: 600;
   }
-
 }
 
-.layer {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: absolute;
-  z-index: 999;
-  top: 0;
-  left: 0;
-  display: grid;
-  place-items: center;
-  .inner {
-    width: 50%;
-    height: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: rgba(229,229,229,0.9);
-    border-radius: 25px;
-    p {
-      color: white;
-      font-size: 30px;
-      background-color: #409eff;
-    }
-    img {
-      margin-top: 20px;
-      width: 100px;
-      height: 40px;
-      background-color: #fff;
-    }
-    .ensure_input {
-      margin-top: 20px;
-      width: 100px;
-      height: 40px;
-    }
-    .ensure_btn {
-      margin-top: 20px;
+.login-link {
+  text-align: center;
+  color: #666;
+
+  a {
+    color: #11998e;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
     }
   }
+}
+
+.captcha-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.captcha-canvas {
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
 }
 </style>
