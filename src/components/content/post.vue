@@ -18,7 +18,7 @@ const submitting = ref(false);
 const categories = ref([]);
 const categoryOptions = computed(() => [
   { value: '', label: '请选择分类' },
-  ...categories.value.map(c => ({ value: c.label, label: c.label }))
+  ...categories.value.map(c => ({ value: c.name, label: c.name }))
 ]);
 
 // 获取分类列表
